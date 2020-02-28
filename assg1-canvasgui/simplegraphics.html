@@ -1,0 +1,205 @@
+<html>
+
+<head>
+<title>HTML5 Canvas &mdash; Demo simple graphics</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+<style>
+    canvas {border: solid 1px black}
+    svg {border: solid 1px black}
+    td {vertical-align: top;}
+    #msgBox {color:gray;}
+    h1, h2, h3, h4 {margin-top: 5px; margin-bottom: 5px;}
+</style>
+</head>
+
+<script type="text/javascript">
+    // Keep canvas, ctx, svg and model as global variables
+    // Dirty, but practical for this small scale demo
+    // A real production system would need to define a scope to protect them
+    var canvas;
+    var ctx;
+    var svg;
+    var ghost;
+    
+    /* ### Model ### */
+    
+    var model
+    function initModel() {
+        model = {color : 'red'}
+        ghost = {
+            current: 1,
+            names: ['CLYDE', 'BLINKY', 'PINKY', 'INKY'],
+            colors: ['orange','red','pink','cyan']
+        }
+        ghostSVG = {
+            current: 1,
+            names: ['CLYDE', 'BLINKY', 'PINKY', 'INKY'],
+            colors: ['orange','red','pink','cyan']
+        }
+    }
+
+    /* ### Mouse ### */
+    
+    function initMouse(canvas) {
+        canvas.addEventListener("mousedown", onMouseDown, false);
+        canvas.addEventListener("mouseup", onMouseUp, false);
+    }
+    function onMouseDown(event) {
+       // console.log("onMouseDown: event = ",event);        
+        if (event.target==canvas){
+            document.getElementById('msgBox').innerHTML = "mouseDown in canvas";
+            ghost.current = (ghost.current + 1)%4;
+            drawCanvas();
+        }
+        else{
+            var path;
+            document.getElementById('msgBox').innerHTML = "mouseDown in SVG";
+            ghostSVG.current = (ghostSVG.current + 1)%4;
+            let fill = ghostSVG.colors[ghostSVG.current];
+            //path = document.createElementNS("http://www.w3.org/2000/svg",'path'); 
+           // mySVG.appendChild(path);
+            path = document.getElementById("path");
+            //path.innerHTML = fill;
+            //path.setAttribute()
+            //console.log(path)
+            path.setAttribute("fill", fill);
+            text = document.getE
+            //path.setAttribute("d","M 50 70 C 60 10, 140 10, 150 70 L 150 150 L 125 130 L 115 150 L 100 130 L 85 150 L 70 130 L 50 150 L 50 70")
+
+
+        }
+    }
+    function onMouseUp(event) {
+       // console.log("onMouseUp: event = ",event);        
+        document.getElementById('msgBox').innerHTML = 
+           "mouseUp";
+    }
+
+    /* ### Drawing ### */
+
+    function drawGhostCanvas(state){
+
+        //Body of the Ghost
+        ctx.beginPath();
+        ctx.arc(100, 75, 50, 0, Math.PI, true);
+        ctx.lineTo(50, 150);
+        ctx.lineTo(70, 130);
+        ctx.lineTo(85, 150);
+        ctx.lineTo(100, 130);
+        ctx.lineTo(115, 150);
+        ctx.lineTo(125, 130);
+        ctx.lineTo(150, 150);
+        ctx.closePath();
+
+        ctx.fillStyle = ghost.colors[state];
+        ctx.fill();
+
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+
+        //Outer eyes of ghost
+        ctx.beginPath(); 
+        ctx.moveTo(90,70);
+        ctx.ellipse(80, 70, 12, 15, 0, 0, 2 * Math.PI);
+        ctx.moveTo(120,70)
+        ctx.ellipse(120, 70, 12, 15, 0, 0, 2 * Math.PI);
+        ctx.closePath(); 
+
+        ctx.fillStyle = 'white';
+        ctx.fill();
+
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+
+        //Inner eyes of the ghost
+        ctx.beginPath();
+        ctx.moveTo(85,75);
+        ctx.ellipse(75, 73, 6, 7, 0, 0, 2 * Math.PI);
+        ctx.moveTo(130,75)
+        ctx.ellipse(115, 73, 6, 7, 0, 0, 2 * Math.PI);
+        ctx.closePath(); 
+
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    function drawNamesCanvas(state){
+          ctx.font = '25px serif';
+          ctx.fillStyle = 'white';
+          ctx.textAlign = "center";
+          ctx.beginPath();
+          ctx.fillText(ghost.names[state], 100, 180);
+          ctx.closePath();
+          ctx.fillStyle = 'black';
+          ctx.fill();
+    }
+
+    function drawCanvas() {
+        ctx.beginPath();
+        ctx.fillRect(0, 0, 200, 200);
+        ctx.closePath();
+        drawGhostCanvas(ghost.current);
+        drawNamesCanvas(ghost.current);
+    }
+
+    /* ### Initialization ### */ 
+    
+    function onLoad() {
+        canvas = document.getElementById('myCanvas');
+        ctx = canvas.getContext('2d');
+        svg = document.getElementById('mySVG');
+
+        // Do init
+        initModel()
+        initMouse(canvas)
+        initMouse(svg)
+
+        // Draw stuff on the canvas
+        drawCanvas()
+    }
+</script>
+
+<body onload="onLoad();">
+    <h2>Graphics demo - <i>Tatiana Castro Velez</i></h2>
+
+    <h4>Graphics</h4>
+    <table><tbody>
+    <tr>
+        <td>SVG</td>
+        <td>Canvas</td>
+    </tr>
+    <tr>
+      <td>
+         <svg id='mySVG' width="200" height="200" width="100" style="background-color:black" onClick = "onMouseDown"
+              xmlns="http://www.w3.org/2000/svg">
+            <path id="path" d="M 50 70 C 60 10, 140 10, 150 70 L 150 150 L 125 130 L 115 150 L 100 130 L 85 150 L 70 130 L 50 150 L 50 70" stroke="black" fill="red"/>
+            <ellipse cx="80" cy="70" rx="12" ry="15" style="fill:white" />
+            <ellipse cx="115" cy="70" rx="12" ry="15" style="fill:white" /> 
+            <ellipse cx="76" cy="73" rx="6" ry="7" style="fill:blue" />  
+            <ellipse cx="111" cy="73" rx="6" ry="7" style="fill:blue" />  
+            <text text-anchor="middle" font-size="25px" fill="white" x="100" y="180">BLINKY</text>     
+    </svg>
+         </svg>
+      </td>
+      <td>
+         <canvas id="myCanvas" width="200" height="200" onclick="onMouseDown"></canvas>
+      </td>
+    </tbody><table>
+    <p><small>Message: <span id="msgBox"></span></small></p>
+
+    <h4>Description</h4>
+    <i>Modify this with your own</i><br>
+    At loading: Draws a polygon in Canvas. SVG content is already declared directly in HTML.<br>
+    Mouse click: Prints a message in message box.
+    
+</body>
+</html>   
